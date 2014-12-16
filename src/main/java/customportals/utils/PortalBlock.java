@@ -18,4 +18,9 @@ public class PortalBlock
     {
         return world.getBlock(x,y,z) == block && (meta == -1 || world.getBlockMetadata(x,y,z) == meta);
     }
+
+    public boolean isBlockMatch(Block block)
+    {
+        return block == this.block;
+    }
 }
