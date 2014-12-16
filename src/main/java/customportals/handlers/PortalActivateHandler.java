@@ -11,7 +11,7 @@ public class PortalActivateHandler
     public void onHitBlock(PlayerInteractEvent event)
     {
         if (event.world.isRemote) return;
-        if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && Settings.portalBlockNether!=null && Settings.portalItemNether!=null &&
+        if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && Settings.portalItemNether!=null && Settings.portalBlockNether!=null &&
                 Settings.portalBlockNether.isMatch(event.world, event.x, event.y, event.z) && Settings.portalItemNether.isItemEqual(event.entityPlayer.getCurrentEquippedItem()))
         {
             NetherPortalBlock.GeneratePortal portal = new NetherPortalBlock.GeneratePortal(event.world, event.x, event.y, event.z, event.entityPlayer);
