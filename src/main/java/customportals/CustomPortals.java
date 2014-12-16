@@ -8,6 +8,7 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import customportals.config.ConfigHandler;
+import customportals.handlers.PlayerTeleportHandler;
 import customportals.handlers.PortalActivateHandler;
 import customportals.reference.Metadata;
 import customportals.reference.Reference;
@@ -30,6 +31,7 @@ public class CustomPortals
 		metadata = Metadata.init(metadata);
 		FMLCommonHandler.instance().bus().register(new ConfigHandler(event.getSuggestedConfigurationFile()));
 		MinecraftForge.EVENT_BUS.register(new PortalActivateHandler());
+		FMLCommonHandler.instance().bus().register(new PlayerTeleportHandler());
 		BlockRegistry.replacePortalBlock();
 	}
 

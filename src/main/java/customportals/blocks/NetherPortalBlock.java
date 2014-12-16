@@ -4,15 +4,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import customportals.config.Settings;
 import customportals.tileentities.TileEntityPortal;
+import customportals.utils.CustomPortalsUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPortal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.init.Blocks;;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.IBlockAccess;
@@ -27,6 +25,11 @@ public class NetherPortalBlock extends BlockPortal implements ITileEntityProvide
     public NetherPortalBlock()
     {
         this.isBlockContainer = true;
+        this.setHardness(-1.0F);
+        setStepSound(soundTypeGlass);
+        setLightLevel(0.75F);
+        setBlockName("portal");
+        setBlockTextureName("portal");
     }
 
     @Override
@@ -107,7 +110,7 @@ public class NetherPortalBlock extends BlockPortal implements ITileEntityProvide
     @Override
     public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity)
     {
-        if (!checkForKey(entity)) return;
+        if (!checkForKey(world, entity)) return;
         TileEntity te = world.getTileEntity(x,y,z);
         if (te instanceof TileEntityPortal)
         {
@@ -117,25 +120,13 @@ public class NetherPortalBlock extends BlockPortal implements ITileEntityProvide
         super.onEntityCollidedWithBlock(world,x,y,z,entity);
     }
 
-    private boolean checkForKey(Entity entity)
+    private boolean checkForKey(World world, Entity entity)
     {
-        if (Settings.portalKeyNether==null) return true;
+        if (Settings.portalKeyNether==null || (!Settings.consumeKeyBothWays && (world.provider.dimensionId == -1))) return true;
         if (entity instanceof EntityPlayer)
         {
-            IInventory playerInventory = ((EntityPlayer) entity).inventory;
-            for (int i = 0; i<playerInventory.getSizeInventory();i++)
-            {
-                ItemStack stack = playerInventory.getStackInSlot(i);
-                if (stack!=null && stack.isItemEqual(Settings.portalKeyNether)) return true;
-            }
-        }
-        else if (entity instanceof EntityLivingBase)
-        {
-            for (int i = 0; i<5; i++)
-            {
-                ItemStack stack = ((EntityLivingBase)entity).getEquipmentInSlot(i);
-                if (stack!=null && stack.isItemEqual(Settings.portalKeyNether)) return true;
-            }
+            if (CustomPortalsUtils.isCreative((EntityPlayer) entity)) return true;
+            if (CustomPortalsUtils.playerHasItems((EntityPlayer) entity, Settings.portalKeyNether)) return true;
         }
         return false;
     }
@@ -243,12 +234,12 @@ public class NetherPortalBlock extends BlockPortal implements ITileEntityProvide
                 y--;
                 if (y<1) return false;
             }
-            if ((this.metadata & 3) != 0) return checkForValidPortal(metadata, justPortal);
+            if ((this.metadata % 3) != 0) return checkForValidPortal(metadata, justPortal);
             for (int i = 1; i<3; i++)
             {
                 if (checkForValidPortal(i, justPortal))
                 {
-                    metadata = i + (player!=null?3:0);
+                    if (metadata%3==0) metadata = i + (player!=null?3:0);
                     return true;
                 }
             }
@@ -369,7 +360,7 @@ public class NetherPortalBlock extends BlockPortal implements ITileEntityProvide
 
         private ForgeDirection getRight(int metadata)
         {
-            switch (metadata & 3)
+            switch (metadata % 3)
             {
                 case 1:
                     return ForgeDirection.EAST;

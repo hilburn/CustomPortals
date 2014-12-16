@@ -38,6 +38,8 @@ public class ConfigHandler
 
     private static void loadConfig()
     {
+        Settings.consumeKeyItem = getBoolean("consumeKeyItems",Configuration.CATEGORY_GENERAL,true);
+        Settings.consumeKeyBothWays = getBoolean("consumeKeyBothWays",Configuration.CATEGORY_GENERAL,true);
 
         Settings.disableNetherFire = getBoolean("disableFireLighting", Settings.NETHER,true);
         Settings.disableNetherPortalPigmen = getBoolean("disableNetherPigmen", Settings.NETHER,true);
@@ -46,13 +48,14 @@ public class ConfigHandler
         Settings.netherPortalItem = getString("netherPortalItem", Settings.NETHER, "");
         Settings.netherPortalKey = getString("netherPortalKey", Settings.NETHER, "");
         Settings.lockNetherPortalToCreator = getBoolean("lockNether", Settings.NETHER, false);
-        Settings.minNetherPortalWidth = getInt("minNetherWidth", Settings.NETHER, 2, 1, 23);
-        Settings.maxNetherPortalWidth = getInt("maxNetherWidth", Settings.NETHER, 23, 1, 23);
-        Settings.minNetherPortalHeight = getInt("minNetherHeight", Settings.NETHER, 3, 2, 23);
-        Settings.maxNetherPortalHeight = getInt("maxNetherHeight", Settings.NETHER,23,2,23);
+        Settings.minNetherPortalWidth = getInt("minNetherWidth", Settings.NETHER_DIMENSIONS, 2, 1, 23);
+        Settings.maxNetherPortalWidth = getInt("maxNetherWidth", Settings.NETHER_DIMENSIONS, 23, 1, 23);
+        Settings.minNetherPortalHeight = getInt("minNetherHeight", Settings.NETHER_DIMENSIONS, 3, 2, 23);
+        Settings.maxNetherPortalHeight = getInt("maxNetherHeight", Settings.NETHER_DIMENSIONS,23,2,23);
 
         if (CustomPortals.isTFLoaded)
         {
+            Settings.twilightForestPodzol = getBoolean("twilightForestPodzol",Settings.TWILIGHT,false);
             Settings.twilightForestPortalItem = getString("twilightPortalItem", Settings.TWILIGHT, "");
             Settings.twilightForestPortalKey = getString("twilightPortalKey", Settings.TWILIGHT, "");
             Settings.lockTwilightForestPortalToCreator = getBoolean("lockTwilight", Settings.TWILIGHT, false);
@@ -83,7 +86,9 @@ public class ConfigHandler
     public static List<IConfigElement> getConfigElements()
     {
         List<IConfigElement> list = new ArrayList<IConfigElement>();
+        list.addAll(new ConfigElement(config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements());
         list.addAll(new ConfigElement(config.getCategory(Settings.NETHER)).getChildElements());
+        list.addAll(new ConfigElement(config.getCategory(Settings.NETHER_DIMENSIONS)).getChildElements());
         if (CustomPortals.isTFLoaded) list.addAll(new ConfigElement(config.getCategory(Settings.TWILIGHT)).getChildElements());
         return list;
     }
