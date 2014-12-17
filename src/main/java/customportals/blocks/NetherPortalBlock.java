@@ -127,8 +127,9 @@ public class NetherPortalBlock extends BlockPortal implements ITileEntityProvide
         {
             if (CustomPortalsUtils.isCreative((EntityPlayer) entity)) return true;
             if (CustomPortalsUtils.playerHasItems((EntityPlayer) entity, Settings.portalKeyNether)) return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
